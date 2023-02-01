@@ -63,7 +63,7 @@ class BinaryTree{
         Effet de Bord
         */
         if(!this.isUrt() && !this.isUlt()){
-            if (this.root = null){
+            if (this.root == null){
                 delete(this.root)
             }
             else{
