@@ -1,6 +1,6 @@
 /*Implémentation d'un Arbre Binaire en JavaScript par Aucuno/Chloclo */
 
-class BinaryTree{
+class BinaryTree {
     /*Classe de l'arbre binaire*/
     constructor(root = null, ult = null, urt = null){
         /*root : Any (La valeur de la racine) 
@@ -23,6 +23,10 @@ class BinaryTree{
     isUrt(){
         /*Retourne l'existence d'un sous arbre droit */
         return this.underRightTree !== null
+    }
+    isNull(){
+        /*Retourne la nullité de l'arbre, si il est entièrement vide de sa racine à ses sous arbres ou non */
+        return this.isEmpty() && !this.isUlt() && !this.isUrt()
     }
     getSize(){
         /*Retourne la taille totale de l'arbre*/
@@ -119,50 +123,55 @@ class BinaryTree{
     treeToList(parameter = "p"){
         /*Retourne la conversion de l'arbre en liste de manière postfixe, infixe ou suffixe. Postfixe par défaut*/
         if(this.isEmpty()){
-            return Object.freeze([])
+            return []
         }
         if(this.isUlt() && this.isUrt()){
             if(parameter == "i"){
-                return Object.freeze([this.underLeftTree.treeToList(parameter), this.root, this.underRightTree.treeToList(parameter)])
+                return [this.underLeftTree.treeToList(parameter), this.root, this.underRightTree.treeToList(parameter)]
             } 
             else if(parameter =="s"){
-                return Object.freeze([this.underLeftTree.treeToList(parameter), this.underRightTree.treeToList(parameter), this.root])
+                return [this.underLeftTree.treeToList(parameter), this.underRightTree.treeToList(parameter), this.root]
             }
             else{
-                return Object.freeze([this.root, this.underLeftTree.treeToList(parameter), this.underRightTree.treeToList(parameter)])
+                return [this.root, this.underLeftTree.treeToList(parameter), this.underRightTree.treeToList(parameter)]
             }
         }
         else if (this.isUlt()){
             if(parameter == "i"){
-                return Object.freeze([this.underLeftTree.treeToList(parameter), this.root, []])
+                return [this.underLeftTree.treeToList(parameter), this.root, []]
             } 
             else if(parameter =="s"){
-                return Object.freeze([this.underLeftTree.treeToList(parameter), [], this.root])
+                return [this.underLeftTree.treeToList(parameter), [], this.root]
             }
             else{
-                return Object.freeze([this.root, this.underLeftTree.treeToList(parameter), []])
+                return [this.root, this.underLeftTree.treeToList(parameter), []]
             }
         }
         else if (this.isUrt()){
             if(parameter =='i'){
-                return Object.freeze([[], this.root, this.underRightTree.treeToList()])
+                return [[], this.root, this.underRightTree.treeToList()]
             }
             else if(parameter =="s"){
-                return Object.freeze([[], this.underRightTree.treeToList(), this.root])
+                return [[], this.underRightTree.treeToList(), this.root]
             }
             else{
-                return Object.freeze([this.root, [],this.underRightTree.treeToList()])
+                return [this.root, [],this.underRightTree.treeToList()]
             }
         }
         else if(parameter =="i"){
-            return Object.freeze([[], this.root, []])
+            return [[], this.root, []]
         }
         else if (parameter =="s"){
-            return Object.freeze([[], [], this.root,])
+            return [[], [], this.root,]
         }
         else{
-            return Object.freeze([this.root, [], []])
+            return [this.root, [], []]
         }
+    }
+
+    treeToTuple(parameter = "p"){
+        /*Retourne une liste immuable*/
+        return Object.freeze(this.treeToList(parameter))
     }
 
     displayInLog(parameter = "p"){
@@ -171,23 +180,68 @@ class BinaryTree{
     }
 }
 
-function insertHeight(arbre, element){
+function insertHeight(tree, element){
     /*Insert des éléments dans l'arbre de manière équilibré du coté gauche et droit 
     Effet de bord*/
-    if(arbre.isEmpty()){
-        arbre.root = element
+    if(tree.isEmpty()){
+        tree.root = element
     }
-    else if(arbre.isUrt() && arbre.isUlt()){
-        console.log(arbre.root, arbre.underRightTree.root, arbre.underLeftTree.root,)
-        if(arbre.underRightTree.getHeight() >= arbre.underLeftTree.getHeight()){
-            insertHeight(arbre.underLeftTree, element)
+    else if(tree.isUrt() && tree.isUlt()){
+        console.log(tree.root, tree.underRightTree.root, tree.underLeftTree.root,)
+        if(tree.underRightTree.getHeight() >= tree.underLeftTree.getHeight()){
+            insertHeight(tree.underLeftTree, element)
         }
         else{
-            insertHeight(arbre.underRightTree,element)
+            insertHeight(tree.underRightTree,element)
         }
     }
     else{
-        arbre.insert(element)
+        tree.insert(element)
     }
+}
 
+function insertDichotomous(tree, element){
+    /*Insère de manière dichotomique des nombres
+      Effet de bord*/
+    if(tree.isEmpty()){
+        tree.root = element
+    }
+    else if(tree.root >=element){
+        if(tree.isUlt()){
+            insertDichotomous(tree.underLeftTree, element)
+        }
+        else{
+            tree.underLeftTree = new BinaryTree()
+            tree.underLeftTree.root = element
+        }
+    }
+    else{
+        if (tree.isUrt()){
+            insertDichotomous(tree.underRightTree, element)
+        }
+        else{
+            tree.underRightTree = new BinaryTree()
+            tree.underRightTree.root = element
+        }
+    }
+}
+
+function dichotomousSearch(tree, element){
+    /*Recherche dichotomique dans un arbre binaire */
+    if(tree.isEmpty()){
+        return new BinaryTree()
+    }
+    else if(element === tree.root){
+        return tree
+    } else if(element <= tree.root){
+        if(tree.isUlt()){
+            return dichotomousSearch(tree.underLeftTree, element)
+        }
+        return new BinaryTree()
+    } else if(element > tree.root){
+        if(tree.isUrt()){
+            return dichotomousSearch(tree.underRightTree, element)
+        }
+        return new BinaryTree()
+    }
 }
